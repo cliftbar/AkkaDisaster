@@ -7,23 +7,6 @@ target
 /.settings
 /RUNNING_PID
 
-# Ignore Play! working directory #
-bin/
-/db
-.eclipse
-/lib/
-/logs/
-/modules
-/project/project
-/project/target
-/target
-tmp/
-test-result
-server.pid
-*.eml
-/dist/
-.cache
-
 # Scala
 *.class
 *.log
@@ -38,5 +21,4 @@ src_managed/
 project/boot/
 project/plugins/project/
 .history
-.lib/
 /project/
