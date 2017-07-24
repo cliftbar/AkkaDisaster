@@ -1,10 +1,9 @@
-/**
-  * Created by cwbarclift on 7/23/2017.
-  */
-import akka.http.scaladsl.server.HttpApp
-import akka.http.scaladsl.server.Route
+package com.cliftbar.akkadisaster
+
+import akka.http.scaladsl.server.{HttpApp, Route}
+import cliftbar.disastermodeling.hurricane.{nws23 => nws}
+import spray.json.DefaultJsonProtocol._
 import spray.json._
-import DefaultJsonProtocol._
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -12,7 +11,7 @@ import java.time.format.DateTimeFormatter
 import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 
 // Server definition
-object FlaPyScalaApp extends HttpApp with App {
+object AkkaDisasterApp extends HttpApp with App {
   // Routes that this WebServer must handle are defined here
   def routes: Route =
   pathEndOrSingleSlash { // Listens to the top `/`
@@ -140,6 +139,3 @@ object FlaPyScalaApp extends HttpApp with App {
   // This will start the server until the return key is pressed
   startServer("localhost", 9000)
 }
-
-// Starting the server
-//
