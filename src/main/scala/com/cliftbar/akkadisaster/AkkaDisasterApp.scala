@@ -1,7 +1,6 @@
 package com.cliftbar.akkadisaster
 
 import akka.http.scaladsl.server.{HttpApp, Route}
-import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 
