@@ -21,4 +21,4 @@ src_managed/
 project/boot/
 project/plugins/project/
 .history
-/project/
+/project/target/
