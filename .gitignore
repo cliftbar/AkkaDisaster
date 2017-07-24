@@ -1,0 +1,42 @@
+logs
+target
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
+
+# Ignore Play! working directory #
+bin/
+/db
+.eclipse
+/lib/
+/logs/
+/modules
+/project/project
+/project/target
+/target
+tmp/
+test-result
+server.pid
+*.eml
+/dist/
+.cache
+
+# Scala
+*.class
+*.log
+
+# Simple Build Tool
+# http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
+
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.lib/
+/project/
