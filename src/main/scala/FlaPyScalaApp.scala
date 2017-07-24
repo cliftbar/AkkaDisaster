@@ -6,6 +6,7 @@ import akka.http.scaladsl.server.Route
 import spray.json._
 import DefaultJsonProtocol._
 
+import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 
 // Server definition
 object FlaPyScalaApp extends HttpApp with App {
@@ -21,7 +22,7 @@ object FlaPyScalaApp extends HttpApp with App {
     } ~
     path("returnJson") { // Path to return json
       get {
-        val j = Map("imageUri" -> "path\\here")
+        val j = Map("imageUri" -> "path\\here", "nws" -> nws.model.Rho0_kPa.toString)
         complete(j.toJson.toString) // Completes with some text
       }
     } ~
