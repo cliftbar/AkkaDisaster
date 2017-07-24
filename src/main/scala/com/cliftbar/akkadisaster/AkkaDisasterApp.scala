@@ -1,8 +1,5 @@
 package com.cliftbar.akkadisaster
 
-/**
-  * Created by cwbarclift on 7/23/2017.
-  */
 import akka.http.scaladsl.server.{HttpApp, Route}
 import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 import spray.json.DefaultJsonProtocol._
