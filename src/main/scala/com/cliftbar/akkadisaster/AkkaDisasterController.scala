@@ -58,8 +58,24 @@ object AkkaDisasterController extends HttpApp with App {
           //  since it doesn't know how the data will be parsed.
           object TrackPointJsonProtocol extends DefaultJsonProtocol with NullOptions {
             implicit object TrackPointJsonFormat extends RootJsonFormat[nws.TrackPoint] {
-              def write(tp: nws.TrackPoint) =
-                JsArray(JsString(tp.stormName), JsNumber(tp.rMax_nmi), JsNumber(tp.fSpeed_kts), JsNumber(tp.gwaf))
+              val dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")
+              def write(tp: nws.TrackPoint) = JsObject (
+                "catalogNumber" -> tp.catalogNumber.map(JsNumber(_)).getOrElse(JsNull)
+                ,"stormName" -> JsString(tp.stormName)
+                ,"basin" -> tp.basin.map(JsString(_)).getOrElse(JsNull)
+                ,"timestamp" -> JsString(tp.timestamp.format(dtFormatter))
+                ,"eyeLat_y" -> JsNumber(tp.eyeLat_y)
+                ,"eyeLon_x" -> JsNumber(tp.eyeLon_x)
+                ,"maxWind_kts" -> tp.maxWind_kts.map(JsNumber(_)).getOrElse(JsNull)
+                ,"minCp_mb" -> tp.minCp_mb.map(JsNumber(_)).getOrElse(JsNull)
+                ,"sequence" -> JsNumber(tp.sequence)
+                ,"fSpeed_kts" -> JsNumber(tp.fSpeed_kts)
+                ,"isLandfallPoint" -> JsBoolean(tp.isLandfallPoint)
+                ,"rMax_nmi" -> JsNumber(tp.rMax_nmi)
+                ,"gwaf" -> JsNumber(tp.gwaf)
+                ,"heading" -> tp.heading.map(JsNumber(_)).getOrElse(JsNull)
+              )
+
               def read (value: JsValue) = value match {
                 case JsObject(fields) => {
                   val catalogNumber: Option[Int] = fields("catalogNumber").convertTo[Option[Int]]//fields.get("catalogNumber").map(x => x.convertTo[Double].toInt)
@@ -81,7 +97,7 @@ object AkkaDisasterController extends HttpApp with App {
                     catalogNumber
                     , stormName
                     , basin
-                    , LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm"))
+                    , LocalDateTime.parse(timestamp, dtFormatter)
                     , eyeLat_y
                     , eyeLon_x
                     , maxWind_kts
@@ -103,8 +119,12 @@ object AkkaDisasterController extends HttpApp with App {
           val track = parsedJson.fields("track").convertTo[Seq[nws.TrackPoint]]
 
           println("parsed successfully")
+          println(track.toJson)
+
+          // Run calculation
           val retMap = model.CalculateHurricane(track, bBox, fspeed, rmax, (pxPerDegreeX, pxPerDegreeY), maxDist, par)
           println(retMap)
+          // package return map as json to send back to caller
           val retJson = retMap.toJson
           complete(retJson.toString) // Return the image name as JSON string
         }
