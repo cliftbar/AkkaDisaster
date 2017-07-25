@@ -98,6 +98,8 @@ object AkkaDisasterModel extends HttpApp with App {
           import TrackPointJsonProtocol._
           val track = parsedJson.fields("track").convertTo[List[nws.TrackPoint]]
 
+          print(track(0).minCp_mb.get)
+          print(", ")
           println("parsed successfully")
           complete("read json") // Completes with return text
         }
