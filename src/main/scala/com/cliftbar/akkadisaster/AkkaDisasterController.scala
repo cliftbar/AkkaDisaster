@@ -133,5 +133,5 @@ object AkkaDisasterController extends HttpApp with App {
 
 
   // This will start the server until the return key is pressed
-  startServer("localhost", 9000)
+  startServer("localhost", 9001)
 }
