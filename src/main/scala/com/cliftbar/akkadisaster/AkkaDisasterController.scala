@@ -6,6 +6,7 @@ import spray.json._
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+import cliftbar.disastermodeling.hurricane.TrackPoint
 import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 
 // Server model definition
@@ -59,10 +60,10 @@ object AkkaDisasterController extends HttpApp with App {
             //  since it doesn't know how the data will be parsed.
             object TrackPointJsonProtocol extends DefaultJsonProtocol with NullOptions {
 
-              implicit object TrackPointJsonFormat extends RootJsonFormat[nws.TrackPoint] {
+              implicit object TrackPointJsonFormat extends RootJsonFormat[TrackPoint] {
                 val dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")
 
-                def write(tp: nws.TrackPoint) = JsObject(
+                def write(tp: TrackPoint) = JsObject(
                   "catalogNumber" -> tp.catalogNumber.map(JsNumber(_)).getOrElse(JsNull)
                   , "stormName" -> JsString(tp.stormName)
                   , "basin" -> tp.basin.map(JsString(_)).getOrElse(JsNull)
@@ -96,7 +97,7 @@ object AkkaDisasterController extends HttpApp with App {
                     val gwaf: Double = fields("gwaf").convertTo[Double]
                     val heading: Option[Double] = fields("heading").convertTo[Option[Double]]
 
-                    new nws.TrackPoint(
+                    new TrackPoint(
                       catalogNumber
                       , stormName
                       , basin
@@ -120,7 +121,7 @@ object AkkaDisasterController extends HttpApp with App {
             }
 
             import TrackPointJsonProtocol._
-            val track = parsedJson.fields("track").convertTo[Seq[nws.TrackPoint]]
+            val track = parsedJson.fields("track").convertTo[Seq[TrackPoint]]
 
             println("parsed successfully")
             println(track.toJson)
