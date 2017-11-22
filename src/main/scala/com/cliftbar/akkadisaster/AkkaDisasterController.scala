@@ -131,7 +131,19 @@ object AkkaDisasterController extends HttpApp with App {
             println(retMap)
             // package return map as json to send back to caller
             val retJson = retMap.toJson
-            complete(retJson.toString) // Return the image name as JSON string
+            //complete(retJson.toString) // Return the image name as JSON string
+            import java.io.File
+            import akka.http.scaladsl.model.{HttpEntity, MediaTypes}
+
+            import java.nio.file.Files
+            val fi = new File(retMap("imageUri"))
+            val fileContent = Files.readAllBytes(fi.toPath)
+
+            val responseEntity = HttpEntity(
+              MediaTypes.`image/png`
+              ,fileContent
+            )
+            complete(responseEntity)
           }
         }
       }
