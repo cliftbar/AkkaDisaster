@@ -1,5 +1,6 @@
 package com.cliftbar.akkadisaster
 
+import com.typesafe.config.ConfigFactory
 import akka.http.scaladsl.server.{HttpApp, Route}
 import spray.json.DefaultJsonProtocol._
 import spray.json._
@@ -151,5 +152,10 @@ object AkkaDisasterController extends HttpApp with App {
 
 
   // This will start the server until the return key is pressed
-  startServer("localhost", 9001)
+  val httpConfig = ConfigFactory.load().getConfig("akka.http")
+  val interface = httpConfig.getString("server.interface")
+  val port = httpConfig.getInt("server.port")
+  println(interface)
+  println(port)
+  startServer(interface, port)
 }
