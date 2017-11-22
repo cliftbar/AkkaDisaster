@@ -1,6 +1,7 @@
 package com.cliftbar.akkadisaster
 
 import java.io.FileWriter
+import java.nio.file.Paths
 import java.time
 
 import cliftbar.disastermodeling.hurricane.TrackPoint
@@ -21,8 +22,9 @@ class AkkaDisasterModel {
     println(time.LocalDateTime.now())
     println("Did test")
 
-    val retPath = System.getProperty("user.dir") + "\\" + imageName
-    val ret = Map("imageUri" -> retPath)
+    val retPath = Paths.get(System.getProperty("user.dir"), imageName)
+    //val retPath = System.getProperty("user.dir") + "\\" + imageName
+    val ret = Map("imageUri" -> retPath.toAbsolutePath.toString)
 
     return ret
   }
