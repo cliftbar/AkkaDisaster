@@ -16,11 +16,11 @@ import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 object AkkaDisasterController extends HttpApp with App {
   // Instance of model class
   val model = new AkkaDisasterModel
-
+  val id = math.random()
   // Routes that this WebServer must handle are defined here
   def routes: Route =
   pathEndOrSingleSlash { // Listens to the top `/`
-    complete("Server up and running") // Completes with some text
+    complete("Server " + id.toString + " up and running") // Completes with some text
   } ~
     path("hello") { // Hello path
       get { // Listens only to GET requests
@@ -157,5 +157,6 @@ object AkkaDisasterController extends HttpApp with App {
   val port = httpConfig.getInt("server.port")
   println(interface)
   println(port)
+  println("ServerID " + id.toString)
   startServer(interface, port)
 }
