@@ -7,6 +7,8 @@ import spray.json._
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+//import akka.http.javadsl.model.headers.RawHeader
+import akka.http.scaladsl.model.headers.RawHeader
 import cliftbar.disastermodeling.hurricane.TrackPoint
 import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 
@@ -20,7 +22,9 @@ object AkkaDisasterController extends HttpApp with App {
   // Routes that this WebServer must handle are defined here
   def routes: Route =
   pathEndOrSingleSlash { // Listens to the top `/`
-    complete("Server " + id.toString + " up and running") // Completes with some text
+    respondWithHeader(RawHeader("id", id.toString)) {
+      complete("Server " + id.toString + " up and running") // Completes with some text
+    }
   } ~
     path("hello") { // Hello path
       get { // Listens only to GET requests
@@ -45,6 +49,7 @@ object AkkaDisasterController extends HttpApp with App {
             val par: Int = parsedJson.fields("par").convertTo[Int]
             val fspeed: Option[Double] = parsedJson.fields.get("fspeed").map(x => x.convertTo[Double])
             val rmax: Double = parsedJson.fields("rmax").convertTo[Double]
+            val id: String = parsedJson.fields("id").convertTo[String]
 
             //get Bbox without custom protocol
             val jsonBbox = parsedJson.fields("BBox").asJsObject
