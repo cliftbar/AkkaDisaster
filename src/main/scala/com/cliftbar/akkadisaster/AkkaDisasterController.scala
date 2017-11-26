@@ -28,6 +28,16 @@ object AkkaDisasterController extends HttpApp with App {
       complete("Server " + id.toString + " up and running") // Completes with some text
     }
   } ~
+    path("async") { // Hello path
+      Thread.sleep(1500)
+      val parsedJson = JsonParser(json).asJsObject
+      val callId: Int = parsedJson.fields("call_id").convertTo[Int]
+      get { // Listens only to GET requests
+        respondWithHeader(RawHeader("call_id", callId.toString)) {
+          complete("async hellp") // Completes with some text
+        }
+      }
+    } ~
     path("hello") { // Hello path
       get { // Listens only to GET requests
         complete("Say hello to akka-http") // Completes with some text
