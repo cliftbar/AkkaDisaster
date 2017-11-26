@@ -28,14 +28,14 @@ object AkkaDisasterController extends HttpApp with App {
       complete("Server " + id.toString + " up and running") // Completes with some text
     }
   } ~
-    path("async") { // Hello path
+    path("asyncHello") { // async hello path
       get { // Listens only to GET requests
         entity(as[String]) { json =>
           Thread.sleep(1500)
           val parsedJson = JsonParser(json).asJsObject
           val callId: Int = parsedJson.fields("call_id").convertTo[Int]
           respondWithHeader(RawHeader("call_id", callId.toString)) {
-            complete("async hellp") // Completes with some text
+            complete("async hello") // Completes with some text
           }
         }
       }
@@ -63,7 +63,7 @@ object AkkaDisasterController extends HttpApp with App {
             val par: Int = parsedJson.fields("par").convertTo[Int]
             val fspeed: Option[Double] = parsedJson.fields.get("fspeed").map(x => x.convertTo[Double])
             val rmax: Double = parsedJson.fields("rmax").convertTo[Double]
-            val id: String = parsedJson.fields("id").convertTo[String]
+            val callId: String = parsedJson.fields("call_id").convertTo[String]
 
             //get Bbox without custom protocol
             val jsonBbox = parsedJson.fields("BBox").asJsObject
@@ -163,7 +163,9 @@ object AkkaDisasterController extends HttpApp with App {
               MediaTypes.`image/png`
               ,fileContent
             )
-            complete(responseEntity)
+            respondWithHeader(RawHeader("call_id", callId.toString)) {
+              complete(responseEntity)
+            }
           }
         }
       }
