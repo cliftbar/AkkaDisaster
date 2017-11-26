@@ -19,13 +19,13 @@ import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 object AkkaDisasterController extends HttpApp with App {
   // Instance of model class
   val model = new AkkaDisasterModel
-  val id = (math.random() * 1000).toInt
+  val server_id = (math.random() * 1000).toInt
   // Routes that this WebServer must handle are defined here
   def routes: Route =
   pathEndOrSingleSlash { // Listens to the top `/`
     Thread.sleep(1500)
-    respondWithHeader(RawHeader("id", id.toString)) {
-      complete("Server " + id.toString + " up and running") // Completes with some text
+    respondWithHeaders(RawHeader("id", server_id.toString), RawHeader("another_header", "hi")) {
+      complete("Server " + server_id.toString + " up and running") // Completes with some text
     }
   } ~
     path("asyncHello") { // async hello path
@@ -163,7 +163,7 @@ object AkkaDisasterController extends HttpApp with App {
               MediaTypes.`image/png`
               ,fileContent
             )
-            respondWithHeader(RawHeader("call_id", callId.toString)) {
+            respondWithHeaders(RawHeader("call_id", callId.toString), RawHeader("server_id", server_id.toString)) {
               complete(responseEntity)
             }
           }
@@ -178,6 +178,6 @@ object AkkaDisasterController extends HttpApp with App {
   val port = httpConfig.getInt("server.port")
   println(interface)
   println(port)
-  println("ServerID " + id.toString)
+  println("ServerID " + server_id.toString)
   startServer(interface, port)
 }
