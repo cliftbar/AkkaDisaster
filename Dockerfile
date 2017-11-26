@@ -3,7 +3,7 @@ FROM hseeberger/scala-sbt
 RUN apt-get update
 RUN apt-get install git
 
-RUN git clone --depth 1 -b tempBranch --single-branch https://github.com/cliftbar/AkkaDisaster.git
+RUN git clone --depth 1 -b dev --single-branch https://github.com/cliftbar/AkkaDisaster.git
 
 WORKDIR AkkaDisaster
 
