@@ -28,7 +28,7 @@ object AkkaDisasterController extends HttpApp with App {
       complete("Server " + id.toString + " up and running") // Completes with some text
     }
   } ~
-    path("async") { json => // Hello path
+    path("async") { // Hello path
       get { // Listens only to GET requests
         entity(as[String]) { json =>
           Thread.sleep(1500)
