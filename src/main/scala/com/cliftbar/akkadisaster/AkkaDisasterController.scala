@@ -6,6 +6,7 @@ import spray.json.DefaultJsonProtocol._
 import spray.json._
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time._
 
 //import akka.http.javadsl.model.headers.RawHeader
 import akka.http.scaladsl.model.headers.RawHeader
@@ -22,6 +23,7 @@ object AkkaDisasterController extends HttpApp with App {
   // Routes that this WebServer must handle are defined here
   def routes: Route =
   pathEndOrSingleSlash { // Listens to the top `/`
+    Thread.sleep(1500)
     respondWithHeader(RawHeader("id", id.toString)) {
       complete("Server " + id.toString + " up and running") // Completes with some text
     }
