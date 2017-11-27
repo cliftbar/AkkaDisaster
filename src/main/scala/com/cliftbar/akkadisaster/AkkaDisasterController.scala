@@ -56,7 +56,7 @@ object AkkaDisasterController extends HttpApp with App {
         get {
           entity(as[String]) { json =>
             val parsedJson = JsonParser(json).asJsObject
-            println(json)
+            //println(json)
 
             // Get top level fields
             val maxDist: Int = parsedJson.fields("maxDist").convertTo[Int]
@@ -143,12 +143,12 @@ object AkkaDisasterController extends HttpApp with App {
             import TrackPointJsonProtocol._
             val track = parsedJson.fields("track").convertTo[Seq[TrackPoint]]
 
-            println("parsed successfully")
-            println(track.toJson)
+            //println("parsed successfully")
+            //println(track.toJson)
 
             // Run calculation
             val retMap = model.CalculateHurricane(track, bBox, fspeed, rmax, (pxPerDegreeX, pxPerDegreeY), maxDist, par)
-            println(retMap)
+            //println(retMap)
             // package return map as json to send back to caller
             val retJson = retMap.toJson
             //complete(retJson.toString) // Return the image name as JSON string
@@ -176,8 +176,8 @@ object AkkaDisasterController extends HttpApp with App {
   val httpConfig = ConfigFactory.load().getConfig("akka.http")
   val interface = httpConfig.getString("server.interface")
   val port = httpConfig.getInt("server.port")
-  println(interface)
-  println(port)
-  println("ServerID " + server_id.toString)
+  //println(interface)
+  //println(port)
+  println("ServerID " + server_id.toString + " at " + interface.toString + ":" + port.toString)
   startServer(interface, port)
 }
