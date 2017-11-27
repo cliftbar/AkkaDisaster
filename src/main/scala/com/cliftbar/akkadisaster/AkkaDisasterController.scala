@@ -24,6 +24,7 @@ object AkkaDisasterController extends HttpApp with App {
   def routes: Route =
   pathEndOrSingleSlash { // Listens to the top `/`
     Thread.sleep(1500)
+    println("Server " + server_id.toString + " hello")
     respondWithHeaders(RawHeader("id", server_id.toString), RawHeader("another_header", "hi")) {
       complete("Server " + server_id.toString + " up and running") // Completes with some text
     }
