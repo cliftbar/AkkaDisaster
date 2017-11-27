@@ -164,6 +164,7 @@ object AkkaDisasterController extends HttpApp with App {
               MediaTypes.`image/png`
               ,fileContent
             )
+            println("ServerID " + server_id.toString + ", call_id: " + callId.toString)
             respondWithHeaders(RawHeader("call_id", callId.toString), RawHeader("server_id", server_id.toString)) {
               complete(responseEntity)
             }
