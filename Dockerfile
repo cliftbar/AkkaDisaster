@@ -11,4 +11,4 @@ RUN sbt compile
 
 EXPOSE 9001
 
-CMD sbt run
+CMD sbt -J-Xmx2048M run
