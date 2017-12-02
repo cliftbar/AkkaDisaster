@@ -1,11 +1,14 @@
 package com.cliftbar.akkadisaster
 
+import com.typesafe.config.ConfigFactory
 import akka.http.scaladsl.server.{HttpApp, Route}
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time._
 
+import akka.http.scaladsl.model.headers.RawHeader
 import cliftbar.disastermodeling.hurricane.TrackPoint
 import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 
@@ -15,12 +18,28 @@ import cliftbar.disastermodeling.hurricane.{nws23 => nws}
 object AkkaDisasterController extends HttpApp with App {
   // Instance of model class
   val model = new AkkaDisasterModel
-
+  val server_id = (math.random() * 1000).toInt
   // Routes that this WebServer must handle are defined here
   def routes: Route =
   pathEndOrSingleSlash { // Listens to the top `/`
-    complete("Server up and running") // Completes with some text
+    Thread.sleep(1500)
+    println("Server " + server_id.toString + " hello")
+    respondWithHeaders(RawHeader("id", server_id.toString), RawHeader("another_header", "hi")) {
+      complete("Server " + server_id.toString + " up and running") // Completes with some text
+    }
   } ~
+    path("asyncHello") { // async hello path
+      get { // Listens only to GET requests
+        entity(as[String]) { json =>
+          Thread.sleep(1500)
+          val parsedJson = JsonParser(json).asJsObject
+          val callId: Int = parsedJson.fields("call_id").convertTo[Int]
+          respondWithHeader(RawHeader("call_id", callId.toString)) {
+            complete("async hello") // Completes with some text
+          }
+        }
+      }
+    } ~
     path("hello") { // Hello path
       get { // Listens only to GET requests
         complete("Say hello to akka-http") // Completes with some text
@@ -37,13 +56,14 @@ object AkkaDisasterController extends HttpApp with App {
         get {
           entity(as[String]) { json =>
             val parsedJson = JsonParser(json).asJsObject
-            println(json)
+            //println(json)
 
             // Get top level fields
             val maxDist: Int = parsedJson.fields("maxDist").convertTo[Int]
             val par: Int = parsedJson.fields("par").convertTo[Int]
             val fspeed: Option[Double] = parsedJson.fields.get("fspeed").map(x => x.convertTo[Double])
             val rmax: Double = parsedJson.fields("rmax").convertTo[Double]
+            val callId: String = parsedJson.fields("call_id").convertTo[String]
 
             //get Bbox without custom protocol
             val jsonBbox = parsedJson.fields("BBox").asJsObject
@@ -123,15 +143,30 @@ object AkkaDisasterController extends HttpApp with App {
             import TrackPointJsonProtocol._
             val track = parsedJson.fields("track").convertTo[Seq[TrackPoint]]
 
-            println("parsed successfully")
-            println(track.toJson)
+            //println("parsed successfully")
+            //println(track.toJson)
 
             // Run calculation
             val retMap = model.CalculateHurricane(track, bBox, fspeed, rmax, (pxPerDegreeX, pxPerDegreeY), maxDist, par)
-            println(retMap)
+            //println(retMap)
             // package return map as json to send back to caller
             val retJson = retMap.toJson
-            complete(retJson.toString) // Return the image name as JSON string
+            //complete(retJson.toString) // Return the image name as JSON string
+            import java.io.File
+            import akka.http.scaladsl.model.{HttpEntity, MediaTypes}
+
+            import java.nio.file.Files
+            val fi = new File(retMap("imageUri"))
+            val fileContent = Files.readAllBytes(fi.toPath)
+
+            val responseEntity = HttpEntity(
+              MediaTypes.`image/png`
+              ,fileContent
+            )
+            println("ServerID " + server_id.toString + ", call_id: " + callId.toString)
+            respondWithHeaders(RawHeader("call_id", callId.toString), RawHeader("server_id", server_id.toString)) {
+              complete(responseEntity)
+            }
           }
         }
       }
@@ -139,5 +174,11 @@ object AkkaDisasterController extends HttpApp with App {
 
 
   // This will start the server until the return key is pressed
-  startServer("localhost", 9001)
+  val httpConfig = ConfigFactory.load().getConfig("akka.http")
+  val interface = httpConfig.getString("server.interface")
+  val port = httpConfig.getInt("server.port")
+  //println(interface)
+  //println(port)
+  println("ServerID " + server_id.toString + " at " + interface.toString + ":" + port.toString)
+  startServer(interface, port)
 }
