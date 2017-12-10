@@ -6,7 +6,6 @@ import spray.json.DefaultJsonProtocol._
 import spray.json._
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time._
 
 import akka.http.scaladsl.model.headers.RawHeader
 import cliftbar.disastermodeling.hurricane.TrackPoint
@@ -58,12 +57,15 @@ object AkkaDisasterController extends HttpApp with App {
             val parsedJson = JsonParser(json).asJsObject
             //println(json)
 
+            // Get Call ID for logging
+            val callId: String = parsedJson.fields("call_id").convertTo[String]
+            println("ServerID " + server_id.toString + ", call_id: " + callId.toString + ", started")
+
             // Get top level fields
             val maxDist: Int = parsedJson.fields("maxDist").convertTo[Int]
             val par: Int = parsedJson.fields("par").convertTo[Int]
             val fspeed: Option[Double] = parsedJson.fields.get("fspeed").map(x => x.convertTo[Double])
             val rmax: Double = parsedJson.fields("rmax").convertTo[Double]
-            val callId: String = parsedJson.fields("call_id").convertTo[String]
 
             //get Bbox without custom protocol
             val jsonBbox = parsedJson.fields("BBox").asJsObject
@@ -163,7 +165,7 @@ object AkkaDisasterController extends HttpApp with App {
               MediaTypes.`image/png`
               ,fileContent
             )
-            println("ServerID " + server_id.toString + ", call_id: " + callId.toString)
+            println("ServerID " + server_id.toString + ", call_id: " + callId.toString + ", finished")
             respondWithHeaders(RawHeader("call_id", callId.toString), RawHeader("server_id", server_id.toString)) {
               complete(responseEntity)
             }
@@ -179,6 +181,6 @@ object AkkaDisasterController extends HttpApp with App {
   val port = httpConfig.getInt("server.port")
   //println(interface)
   //println(port)
-  println("ServerID " + server_id.toString + " at " + interface.toString + ":" + port.toString)
+  println("ServerID " + server_id.toString + " at " + interface.toString + ":" + port.toString + " ready")
   startServer(interface, port)
 }
